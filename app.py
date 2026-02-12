@@ -377,3 +377,44 @@ summary.append("- 주요 리스크:")
 summary.extend(risk_rows if risk_rows else ["  - 🟢 특별한 경고 없음(룰 기반)"])
 
 st.code("\n".join(summary), language="markdown")
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate
+from reportlab.platypus import Paragraph
+from reportlab.platypus import Spacer
+from reportlab.platypus import ListFlowable, ListItem
+from reportlab.platypus import Preformatted
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.platypus import SimpleDocTemplate
+import io
+
+st.divider()
+st.subheader("5) AI 개선 로드맵 자동 생성")
+
+if st.button("🚀 AI 개선 로드맵 생성"):
+    roadmap = []
+
+    if gross_margin is not None and gross_margin < 0.15:
+        roadmap.append("1단계: 원가 구조 분석 → 재료비/외주비 재검토 → 손익분기점 재설계")
+
+    if defect_rate is not None and defect_rate > 0.03:
+        roadmap.append("2단계: 불량 원인 파레토 분석 → 공정능력(CPK) 개선 → 표준작업 재정립")
+
+    if on_time_rate is not None and on_time_rate < 0.90:
+        roadmap.append("3단계: 병목공정 분석 → 생산계획 재설계 → 안전재고 정책 개선")
+
+    if inv_to_sales is not None and inv_to_sales > 0.30:
+        roadmap.append("4단계: ABC 재고분석 → 회전율 관리 → 장기재고 정리")
+
+    if not roadmap:
+        roadmap.append("현재 지표는 양호합니다. 고도화 단계(자동화·스마트팩토리·AI 예측)로 확장 권장")
+
+    for r in roadmap:
+        st.write("•", r)
+
+    st.session_state["roadmap"] = roadmap
