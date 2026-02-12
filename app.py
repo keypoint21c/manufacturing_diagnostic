@@ -418,3 +418,35 @@ if st.button("🚀 AI 개선 로드맵 생성"):
         st.write("•", r)
 
     st.session_state["roadmap"] = roadmap
+
+st.subheader("6) PDF 보고서 다운로드")
+
+if "roadmap" in st.session_state:
+
+    if st.button("📄 PDF 생성"):
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer)
+        elements = []
+
+        styles = getSampleStyleSheet()
+        elements.append(Paragraph("제조기업 AI 진단 보고서", styles["Heading1"]))
+        elements.append(Spacer(1, 0.3 * inch))
+
+        elements.append(Paragraph("종합점수: " + (f"{total_score:.1f}" if total_score else "-"), styles["Normal"]))
+        elements.append(Spacer(1, 0.2 * inch))
+
+        elements.append(Paragraph("AI 개선 로드맵", styles["Heading2"]))
+        elements.append(Spacer(1, 0.2 * inch))
+
+        for r in st.session_state["roadmap"]:
+            elements.append(Paragraph(r, styles["Normal"]))
+            elements.append(Spacer(1, 0.1 * inch))
+
+        doc.build(elements)
+
+        st.download_button(
+            label="⬇ PDF 다운로드",
+            data=buffer.getvalue(),
+            file_name="제조기업_AI_진단보고서.pdf",
+            mime="application/pdf"
+        )
