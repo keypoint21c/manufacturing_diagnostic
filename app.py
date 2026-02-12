@@ -3,6 +3,11 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
+import io
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+
 st.set_page_config(page_title="제조기업 경영진단", layout="wide")
 st.title("🏭 제조기업 경영진단 (실전 버전)")
 st.caption("엑셀/CSV 업로드 → 컬럼 매핑 → KPI 산출 → 점수/리스크 신호등 → 개선 포인트 제시")
