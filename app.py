@@ -303,7 +303,55 @@ with tab3:
                 st.plotly_chart(fig, use_container_width=True)
         else:
             st.info("납기일/출고일 컬럼을 매핑하면 납기 지연 분포를 보여줄 수 있습니다.")
+            
+tab4 = st.tabs(["📊 품목/라인 분석"])[0]
 
+with tab4:
+    st.subheader("품목/라인/공정별 분해 분석")
+
+    col_item = st.selectbox("품목(선택)", ["(없음)"] + cols)
+    col_line = st.selectbox("라인(선택)", ["(없음)"] + cols)
+    col_process = st.selectbox("공정(선택)", ["(없음)"] + cols)
+    col_defect_reason = st.selectbox("불량사유(선택)", ["(없음)"] + cols)
+
+    if col_item != "(없음)" and col_prod_qty != "(없음)" and col_defect_qty != "(없음)":
+        tmp = df[[col_item, col_prod_qty, col_defect_qty]].copy()
+        tmp.columns = ["품목", "생산", "불량"]
+        tmp["생산"] = pd.to_numeric(tmp["생산"], errors="coerce")
+        tmp["불량"] = pd.to_numeric(tmp["불량"], errors="coerce")
+        tmp = tmp.groupby("품목").sum().reset_index()
+        tmp["불량률"] = tmp["불량"] / tmp["생산"]
+
+        fig = px.bar(tmp.sort_values("불량률", ascending=False),
+                     x="품목", y="불량률",
+                     title="품목별 불량률")
+        st.plotly_chart(fig, use_container_width=True)
+
+    if col_line != "(없음)" and col_good_qty != "(없음)" and col_prod_qty != "(없음)":
+        tmp2 = df[[col_line, col_good_qty, col_prod_qty]].copy()
+        tmp2.columns = ["라인", "양품", "생산"]
+        tmp2["양품"] = pd.to_numeric(tmp2["양품"], errors="coerce")
+        tmp2["생산"] = pd.to_numeric(tmp2["생산"], errors="coerce")
+        tmp2 = tmp2.groupby("라인").sum().reset_index()
+        tmp2["수율"] = tmp2["양품"] / tmp2["생산"]
+
+        fig2 = px.bar(tmp2.sort_values("수율"),
+                      x="라인", y="수율",
+                      title="라인별 수율 비교")
+        st.plotly_chart(fig2, use_container_width=True)
+
+    if col_defect_reason != "(없음)" and col_defect_qty != "(없음)":
+        tmp3 = df[[col_defect_reason, col_defect_qty]].copy()
+        tmp3.columns = ["불량사유", "불량"]
+        tmp3["불량"] = pd.to_numeric(tmp3["불량"], errors="coerce")
+        tmp3 = tmp3.groupby("불량사유").sum().reset_index()
+        tmp3 = tmp3.sort_values("불량", ascending=False)
+
+        fig3 = px.bar(tmp3,
+                      x="불량사유", y="불량",
+                      title="불량사유 파레토")
+        st.plotly_chart(fig3, use_container_width=True)
+        
 st.divider()
 
 st.subheader("4) 진단 결과 요약(컨설팅용 복사)")
